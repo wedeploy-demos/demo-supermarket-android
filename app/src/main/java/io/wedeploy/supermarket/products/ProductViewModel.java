@@ -27,130 +27,130 @@ import static io.wedeploy.supermarket.SupermarketApplication.getContext;
  */
 public class ProductViewModel extends ViewModel {
 
-	public void addToCart(Product product) {
-		SupermarketData data = SupermarketData.getInstance();
+  public void addToCart(Product product) {
+    SupermarketData data = SupermarketData.getInstance();
 
-		cartItemCount.setValue(cartItemCount.getValue() + 1);
+    cartItemCount.setValue(cartItemCount.getValue() + 1);
 
-		disposables.add(data.addToCart(product)
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.subscribe(new BiConsumer<Response, Throwable>() {
-				@Override
-				public void accept(
-					@io.reactivex.annotations.NonNull Response response,
-					@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
-					if (throwable == null) {
-						return;
-					}
+    disposables.add(data.addToCart(product)
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .subscribe(new BiConsumer<Response, Throwable>() {
+        @Override
+        public void accept(
+          @io.reactivex.annotations.NonNull Response response,
+          @io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+          if (throwable == null) {
+            return;
+          }
 
-					cartItemCount.setValue(cartItemCount.getValue() - 1);
+          cartItemCount.setValue(cartItemCount.getValue() - 1);
 
-					Toast.makeText(
-						getContext(),
-						R.string.could_not_add_item_to_cart,
-						Toast.LENGTH_SHORT).show();
-				}
-			}));
-	}
+          Toast.makeText(
+            getContext(),
+            R.string.could_not_add_item_to_cart,
+            Toast.LENGTH_SHORT).show();
+        }
+      }));
+  }
 
-	public LiveData<Integer> getCartItemCount() {
-		if (cartItemCount == null) {
-			cartItemCount = new MutableLiveData<>();
-			cartItemCount.setValue(0);
-		}
+  public LiveData<Integer> getCartItemCount() {
+    if (cartItemCount == null) {
+      cartItemCount = new MutableLiveData<>();
+      cartItemCount.setValue(0);
+    }
 
-		loadCartItemCount();
+    loadCartItemCount();
 
-		return cartItemCount;
-	}
+    return cartItemCount;
+  }
 
-	public LiveData<List<Product>> getProducts() {
-		if (products == null) {
-			products = new MutableLiveData<>();
-			loadProducts(type);
-		}
+  public LiveData<List<Product>> getProducts() {
+    if (products == null) {
+      products = new MutableLiveData<>();
+      loadProducts(type);
+    }
 
-		return products;
-	}
+    return products;
+  }
 
-	public void filterProducts(String type) {
-		if (changedFilter(type)) {
-			loadProducts(type);
-		}
+  public void filterProducts(String type) {
+    if (changedFilter(type)) {
+      loadProducts(type);
+    }
 
-		this.type = type;
-	}
+    this.type = type;
+  }
 
-	@Override
-	protected void onCleared() {
-		disposables.clear();
-	}
+  @Override
+  protected void onCleared() {
+    disposables.clear();
+  }
 
-	private boolean changedFilter(String type) {
-		return !this.type.equalsIgnoreCase(type);
-	}
+  private boolean changedFilter(String type) {
+    return !this.type.equalsIgnoreCase(type);
+  }
 
-	private void loadCartItemCount() {
-		SupermarketData data = SupermarketData.getInstance();
+  private void loadCartItemCount() {
+    SupermarketData data = SupermarketData.getInstance();
 
-		disposables.add(data.getCartCount()
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Consumer<Response>() {
-				@Override
-				public void accept(
-					@io.reactivex.annotations.NonNull Response response) throws Exception {
+    disposables.add(data.getCartCount()
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new Consumer<Response>() {
+        @Override
+        public void accept(
+          @io.reactivex.annotations.NonNull Response response) throws Exception {
 
-					cartItemCount.setValue(Integer.valueOf(response.getBody()));
-				}
-			}, new Consumer<Throwable>() {
-				@Override
-				public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
-					throws Exception {
+          cartItemCount.setValue(Integer.valueOf(response.getBody()));
+        }
+      }, new Consumer<Throwable>() {
+        @Override
+        public void accept(@io.reactivex.annotations.NonNull Throwable throwable)
+          throws Exception {
 
-					cartItemCount.setValue(null);
-				}
-			}));
-	}
+          cartItemCount.setValue(null);
+        }
+      }));
+  }
 
-	private void loadProducts(String type) {
-		SupermarketData data = SupermarketData.getInstance();
-		disposables.add(data.getProducts(type)
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(
-				new Consumer<Response>() {
-					@Override
-					public void accept(@NonNull Response response) throws Exception {
-						products.setValue(parseProducts(response));
-					}
-				},
-				new Consumer<Throwable>() {
-					@Override
-					public void accept(@NonNull Throwable throwable) throws Exception {
-						products.setValue(null);
-					}
-				}));
-	}
+  private void loadProducts(String type) {
+    SupermarketData data = SupermarketData.getInstance();
+    disposables.add(data.getProducts(type)
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(
+        new Consumer<Response>() {
+          @Override
+          public void accept(@NonNull Response response) throws Exception {
+            products.setValue(parseProducts(response));
+          }
+        },
+        new Consumer<Throwable>() {
+          @Override
+          public void accept(@NonNull Throwable throwable) throws Exception {
+            products.setValue(null);
+          }
+        }));
+  }
 
-	@NonNull
-	private List<Product> parseProducts(Response response) throws JSONException {
-		JSONArray jsonArray = new JSONArray(response.getBody());
-		List<Product> products = new ArrayList<>(50);
+  @NonNull
+  private List<Product> parseProducts(Response response) throws JSONException {
+    JSONArray jsonArray = new JSONArray(response.getBody());
+    List<Product> products = new ArrayList<>(50);
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			products.add(new Product(jsonArray.getJSONObject(i)));
-		}
+    for (int i = 0; i < jsonArray.length(); i++) {
+      products.add(new Product(jsonArray.getJSONObject(i)));
+    }
 
-		return products;
-	}
+    return products;
+  }
 
-	private MutableLiveData<Integer> cartItemCount;
-	private CompositeDisposable disposables = new CompositeDisposable();
-	private MutableLiveData<List<Product>> products;
-	private String type = "all";
+  private MutableLiveData<Integer> cartItemCount;
+  private CompositeDisposable disposables = new CompositeDisposable();
+  private MutableLiveData<List<Product>> products;
+  private String type = "all";
 
 }

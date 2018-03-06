@@ -17,29 +17,29 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class Bindings {
 
-	@BindingAdapter({"imageUrl", "placeholder"})
-	public static void loadImage(ImageView view, String url, Drawable placeholder) {
-		Context context = view.getContext();
-		int cornerRadius = context.getResources().getDimensionPixelSize(R.dimen
-			.image_corner_radius);
+  @BindingAdapter({"imageUrl", "placeholder"})
+  public static void loadImage(ImageView view, String url, Drawable placeholder) {
+    Context context = view.getContext();
+    int cornerRadius = context.getResources().getDimensionPixelSize(R.dimen
+      .image_corner_radius);
 
-		Glide.with(context)
-			.load(url)
-			.placeholder(placeholder)
-			.bitmapTransform(
-				new CenterCrop(context),
-				new RoundedCornersTransformation(context, cornerRadius, 0))
-			.into(view);
-	}
+    Glide.with(context)
+      .load(url)
+      .placeholder(placeholder)
+      .bitmapTransform(
+        new CenterCrop(context),
+        new RoundedCornersTransformation(context, cornerRadius, 0))
+      .into(view);
+  }
 
-	@BindingAdapter({"font"})
-	public static void font(Button button, String fontName) {
-		Font.setFont(button, fontName);
-	}
+  @BindingAdapter({"font"})
+  public static void font(Button button, String fontName) {
+    Font.setFont(button, fontName);
+  }
 
-	@BindingAdapter({"font"})
-	public static void font(TextView textView, String fontName) {
-		Font.setFont(textView, fontName);
-	}
+  @BindingAdapter({"font"})
+  public static void font(TextView textView, String fontName) {
+    Font.setFont(textView, fontName);
+  }
 
 }

@@ -25,69 +25,69 @@ import static io.wedeploy.supermarket.SupermarketApplication.getContext;
  */
 public class CartViewModel extends ViewModel {
 
-	public void deleteFromCart(String id) {
-		SupermarketData data = SupermarketData.getInstance();
+  public void deleteFromCart(String id) {
+    SupermarketData data = SupermarketData.getInstance();
 
-		data.deleteFromCart(id)
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Consumer<Response>() {
-				@Override
-				public void accept(@NonNull Response response) throws Exception {
+    data.deleteFromCart(id)
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new Consumer<Response>() {
+        @Override
+        public void accept(@NonNull Response response) throws Exception {
 
-				}
-			}, new Consumer<Throwable>() {
-				@Override
-				public void accept(@NonNull Throwable throwable) throws Exception {
-					Toast.makeText(
-						getContext(), R.string.could_not_delete_product_from_cart,
-						Toast.LENGTH_SHORT).show();
-				}
-			});
-	}
+        }
+      }, new Consumer<Throwable>() {
+        @Override
+        public void accept(@NonNull Throwable throwable) throws Exception {
+          Toast.makeText(
+            getContext(), R.string.could_not_delete_product_from_cart,
+            Toast.LENGTH_SHORT).show();
+        }
+      });
+  }
 
-	public LiveData<List<CartProduct>> getCart() {
-		if (cartProducts == null) {
-			cartProducts = new MutableLiveData<>();
-			loadCard();
-		}
+  public LiveData<List<CartProduct>> getCart() {
+    if (cartProducts == null) {
+      cartProducts = new MutableLiveData<>();
+      loadCard();
+    }
 
-		return cartProducts;
-	}
+    return cartProducts;
+  }
 
-	private void loadCard() {
-		SupermarketData data = SupermarketData.getInstance();
+  private void loadCard() {
+    SupermarketData data = SupermarketData.getInstance();
 
-		data.getCart()
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Consumer<Response>() {
-				@Override
-				public void accept(@NonNull Response response) throws Exception {
-					cartProducts.setValue(parseCartProducts(response));
-				}
-			}, new Consumer<Throwable>() {
-				@Override
-				public void accept(@NonNull Throwable throwable) throws Exception {
+    data.getCart()
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new Consumer<Response>() {
+        @Override
+        public void accept(@NonNull Response response) throws Exception {
+          cartProducts.setValue(parseCartProducts(response));
+        }
+      }, new Consumer<Throwable>() {
+        @Override
+        public void accept(@NonNull Throwable throwable) throws Exception {
 
-				}
-			});
-	}
+        }
+      });
+  }
 
-	@android.support.annotation.NonNull
-	private List<CartProduct> parseCartProducts(Response response) throws JSONException {
-		JSONArray jsonArray = new JSONArray(response.getBody());
-		List<CartProduct> cartProducts = new ArrayList<>(50);
+  @android.support.annotation.NonNull
+  private List<CartProduct> parseCartProducts(Response response) throws JSONException {
+    JSONArray jsonArray = new JSONArray(response.getBody());
+    List<CartProduct> cartProducts = new ArrayList<>(50);
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			cartProducts.add(new CartProduct(jsonArray.getJSONObject(i)));
-		}
+    for (int i = 0; i < jsonArray.length(); i++) {
+      cartProducts.add(new CartProduct(jsonArray.getJSONObject(i)));
+    }
 
-		return cartProducts;
-	}
+    return cartProducts;
+  }
 
-	private MutableLiveData<List<CartProduct>> cartProducts;
+  private MutableLiveData<List<CartProduct>> cartProducts;
 
 }

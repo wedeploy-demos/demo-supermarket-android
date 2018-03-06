@@ -20,53 +20,53 @@ import static io.wedeploy.supermarket.util.RequestState.*;
  */
 public class SignUpViewModel extends ViewModel {
 
-	public SignUpViewModel() {
-		signUpState = new MutableLiveData<>();
-		signUpState.setValue(new SignUpState(IDLE));
-	}
+  public SignUpViewModel() {
+    signUpState = new MutableLiveData<>();
+    signUpState.setValue(new SignUpState(IDLE));
+  }
 
-	public LiveData<SignUpState> getState() {
-		return signUpState;
-	}
+  public LiveData<SignUpState> getState() {
+    return signUpState;
+  }
 
-	public void setIdleState() {
-		signUpState.setValue(new SignUpState(IDLE));
-	}
+  public void setIdleState() {
+    signUpState.setValue(new SignUpState(IDLE));
+  }
 
-	public void signUp(final String email, final String password, String name) {
-		final SupermarketAuth auth = SupermarketAuth.getInstance();
-		auth.signUp(email, password, name)
-			.asSingle()
-			.flatMap(new Function<Response, SingleSource<Response>>() {
-				@Override
-				public SingleSource<Response> apply(@NonNull Response response) throws Exception {
-					auth.saveUser(response);
+  public void signUp(final String email, final String password, String name) {
+    final SupermarketAuth auth = SupermarketAuth.getInstance();
+    auth.signUp(email, password, name)
+      .asSingle()
+      .flatMap(new Function<Response, SingleSource<Response>>() {
+        @Override
+        public SingleSource<Response> apply(@NonNull Response response) throws Exception {
+          auth.saveUser(response);
 
-					return auth.signIn(email, password)
-						.asSingle()
-						.subscribeOn(Schedulers.io());
-				}
-			})
-			.subscribeOn(Schedulers.io())
-			.doOnSuccess(new Consumer<Response>() {
-				@Override
-				public void accept(@NonNull Response response) throws Exception {
-					auth.saveToken(response);
-				}
-			})
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new DisposableSingleObserver<Response>() {
-				@Override
-				public void onSuccess(Response response) {
-					signUpState.setValue(new SignUpState(SUCCESS));
-				}
+          return auth.signIn(email, password)
+            .asSingle()
+            .subscribeOn(Schedulers.io());
+        }
+      })
+      .subscribeOn(Schedulers.io())
+      .doOnSuccess(new Consumer<Response>() {
+        @Override
+        public void accept(@NonNull Response response) throws Exception {
+          auth.saveToken(response);
+        }
+      })
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableSingleObserver<Response>() {
+        @Override
+        public void onSuccess(Response response) {
+          signUpState.setValue(new SignUpState(SUCCESS));
+        }
 
-				@Override
-				public void onError(Throwable throwable) {
-					signUpState.setValue(new SignUpState(FAILURE, new Exception(throwable)));
-				}
-			});
-	}
+        @Override
+        public void onError(Throwable throwable) {
+          signUpState.setValue(new SignUpState(FAILURE, new Exception(throwable)));
+        }
+      });
+  }
 
-	private MutableLiveData<SignUpState> signUpState;
+  private MutableLiveData<SignUpState> signUpState;
 }

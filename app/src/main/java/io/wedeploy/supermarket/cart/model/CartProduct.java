@@ -7,32 +7,32 @@ import org.json.JSONObject;
  */
 public class CartProduct {
 
-	public CartProduct(JSONObject jsonObject) {
-		id = jsonObject.optString("id", "");
-		productFilename = jsonObject.optString("productFilename", "");
-		productPrice = jsonObject.optDouble("productPrice", 0);
-		productTitle = jsonObject.optString("productTitle", "");
-	}
+  public CartProduct(JSONObject jsonObject) {
+    id = jsonObject.optString("id", "");
+    productFilename = jsonObject.optString("productFilename", "");
+    productPrice = jsonObject.optDouble("productPrice", 0);
+    productTitle = jsonObject.optString("productTitle", "");
+  }
 
-	public String getImageUrl() {
-		return "https://ui-supermarket.wedeploy.io/assets/images/" + productFilename;
-	}
+  public String getImageUrl() {
+    return "https://ui-supermarket.wedeploy.io/assets/images/" + productFilename;
+  }
 
-	public double getProductPrice() {
-		return productPrice;
-	}
+  public double getProductPrice() {
+    return productPrice;
+  }
 
-	public String getProductTitle() {
-		return productTitle;
-	}
+  public String getProductTitle() {
+    return productTitle;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	private final String id;
-	private final String productFilename;
-	private final double productPrice;
-	private final String productTitle;
+  private final String id;
+  private final String productFilename;
+  private final double productPrice;
+  private final String productTitle;
 
 }

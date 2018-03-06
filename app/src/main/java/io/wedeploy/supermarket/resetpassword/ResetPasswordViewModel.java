@@ -19,38 +19,38 @@ import static io.wedeploy.supermarket.util.RequestState.SUCCESS;
  */
 public class ResetPasswordViewModel extends ViewModel {
 
-	public ResetPasswordViewModel() {
-		resetPasswordState = new MutableLiveData<>();
-		resetPasswordState.setValue(new ResetPasswordState(IDLE));
-	}
+  public ResetPasswordViewModel() {
+    resetPasswordState = new MutableLiveData<>();
+    resetPasswordState.setValue(new ResetPasswordState(IDLE));
+  }
 
-	public LiveData<ResetPasswordState> getState() {
-		return resetPasswordState;
-	}
+  public LiveData<ResetPasswordState> getState() {
+    return resetPasswordState;
+  }
 
-	public void resetPassword(String email) {
-		SupermarketAuth auth = SupermarketAuth.getInstance();
-		auth.resetPassword(email)
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Consumer<Response>() {
-				@Override
-				public void accept(@NonNull Response response) throws Exception {
-					resetPasswordState.setValue(new ResetPasswordState(SUCCESS));
-				}
-			}, new Consumer<Throwable>() {
-				@Override
-				public void accept(@NonNull Throwable throwable) throws Exception {
-					resetPasswordState.setValue(new ResetPasswordState(FAILURE, new Exception(throwable)));
-				}
-			});
-	}
+  public void resetPassword(String email) {
+    SupermarketAuth auth = SupermarketAuth.getInstance();
+    auth.resetPassword(email)
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new Consumer<Response>() {
+        @Override
+        public void accept(@NonNull Response response) throws Exception {
+          resetPasswordState.setValue(new ResetPasswordState(SUCCESS));
+        }
+      }, new Consumer<Throwable>() {
+        @Override
+        public void accept(@NonNull Throwable throwable) throws Exception {
+          resetPasswordState.setValue(new ResetPasswordState(FAILURE, new Exception(throwable)));
+        }
+      });
+  }
 
-	public void setIdleState() {
-		resetPasswordState.setValue(new ResetPasswordState(IDLE));
-	}
+  public void setIdleState() {
+    resetPasswordState.setValue(new ResetPasswordState(IDLE));
+  }
 
-	private final MutableLiveData<ResetPasswordState> resetPasswordState;
+  private final MutableLiveData<ResetPasswordState> resetPasswordState;
 
 }

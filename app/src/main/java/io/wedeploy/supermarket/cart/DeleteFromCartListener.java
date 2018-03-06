@@ -7,6 +7,6 @@ import io.wedeploy.supermarket.cart.model.CartProduct;
  */
 public interface DeleteFromCartListener {
 
-	void onDeleteFromCart(CartProduct cartProduct);
+  void onDeleteFromCart(CartProduct cartProduct);
 
 }

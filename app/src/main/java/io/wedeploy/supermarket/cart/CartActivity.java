@@ -30,164 +30,164 @@ import java.util.List;
  * @author Silvio Santos
  */
 public class CartActivity extends AppCompatActivity
-	implements DeleteFromCartListener, LifecycleRegistryOwner {
+  implements DeleteFromCartListener, LifecycleRegistryOwner {
 
-	LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
+  LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-	@Override
-	public void onDeleteFromCart(CartProduct cartProduct) {
-		cartViewModel.deleteFromCart(cartProduct.getId());
+  @Override
+  public void onDeleteFromCart(CartProduct cartProduct) {
+    cartViewModel.deleteFromCart(cartProduct.getId());
 
-		if (adapter.getItemCount() == 0) {
-			showEmptyCart();
-		}
-	}
+    if (adapter.getItemCount() == 0) {
+      showEmptyCart();
+    }
+  }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
 
-		switch (id) {
-			case android.R.id.home:
-				onBackPressed();
-				return true;
-		}
+    switch (id) {
+      case android.R.id.home:
+        onBackPressed();
+        return true;
+    }
 
-		return super.onOptionsItemSelected(item);
-	}
+    return super.onOptionsItemSelected(item);
+  }
 
-	@Override
-	public LifecycleRegistry getLifecycle() {
-		return lifecycleRegistry;
-	}
+  @Override
+  public LifecycleRegistry getLifecycle() {
+    return lifecycleRegistry;
+  }
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-		binding = DataBindingUtil.setContentView(this, R.layout.activity_cart);
-		binding.cartList.setAdapter(adapter);
+    binding = DataBindingUtil.setContentView(this, R.layout.activity_cart);
+    binding.cartList.setAdapter(adapter);
 
-		setSupportActionBar(binding.toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    setSupportActionBar(binding.toolbar);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-			@Override
-			public void onChanged() {
-				updateCheckoutAmount();
-			}
+    adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+      @Override
+      public void onChanged() {
+        updateCheckoutAmount();
+      }
 
-			@Override
-			public void onItemRangeRemoved(int positionStart, int itemCount) {
-				updateCheckoutAmount();
-			}
-		});
+      @Override
+      public void onItemRangeRemoved(int positionStart, int itemCount) {
+        updateCheckoutAmount();
+      }
+    });
 
-		showLoading();
-		cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
+    showLoading();
+    cartViewModel = ViewModelProviders.of(this).get(CartViewModel.class);
 
-		cartViewModel.getCart()
-			.observe(this, new Observer<List<CartProduct>>() {
-				@Override
-				public void onChanged(@Nullable List<CartProduct> cartProducts) {
-					showCartProducts(cartProducts);
-				}
-			});
-	}
+    cartViewModel.getCart()
+      .observe(this, new Observer<List<CartProduct>>() {
+        @Override
+        public void onChanged(@Nullable List<CartProduct> cartProducts) {
+          showCartProducts(cartProducts);
+        }
+      });
+  }
 
-	private void sendCheckoutEmail() {
-		SupermarketEmail.getInstance()
-			.sendCheckoutEmail(
-				Settings.getUserName(),
-				Settings.getUserEmail(),
-				adapter.getCartProducts())
-			.execute(new Callback() {
-				@Override
-				public void onSuccess(Response response) {
-					Log.i(TAG, "Checkout email sent");
-				}
+  private void sendCheckoutEmail() {
+    SupermarketEmail.getInstance()
+      .sendCheckoutEmail(
+        Settings.getUserName(),
+        Settings.getUserEmail(),
+        adapter.getCartProducts())
+      .execute(new Callback() {
+        @Override
+        public void onSuccess(Response response) {
+          Log.i(TAG, "Checkout email sent");
+        }
 
-				@Override
-				public void onFailure(Exception e) {
-					Log.e(TAG, "Failed to send checkout email", e);
-				}
-			});
-	}
+        @Override
+        public void onFailure(Exception e) {
+          Log.e(TAG, "Failed to send checkout email", e);
+        }
+      });
+  }
 
-	private void showCartProducts(List<CartProduct> products) {
-		if (products == null) {
-			showEmptyCart();
-			Toast.makeText(this, "Could not load products", Toast.LENGTH_LONG).show();
+  private void showCartProducts(List<CartProduct> products) {
+    if (products == null) {
+      showEmptyCart();
+      Toast.makeText(this, "Could not load products", Toast.LENGTH_LONG).show();
 
-			return;
-		}
+      return;
+    }
 
-		if (products.isEmpty()) {
-			showEmptyCart();
+    if (products.isEmpty()) {
+      showEmptyCart();
 
-			return;
-		}
+      return;
+    }
 
-		adapter.setItems(products);
+    adapter.setItems(products);
 
-		TransitionManager.beginDelayedTransition(binding.rootLayout, new Fade());
-		binding.emptyView.setVisibility(View.INVISIBLE);
-		binding.loading.setVisibility(View.INVISIBLE);
-		binding.cartList.setVisibility(View.VISIBLE);
-		binding.button.setVisibility(View.VISIBLE);
-		binding.button.setText(R.string.checkout);
-		binding.button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				sendCheckoutEmail();
+    TransitionManager.beginDelayedTransition(binding.rootLayout, new Fade());
+    binding.emptyView.setVisibility(View.INVISIBLE);
+    binding.loading.setVisibility(View.INVISIBLE);
+    binding.cartList.setVisibility(View.VISIBLE);
+    binding.button.setVisibility(View.VISIBLE);
+    binding.button.setText(R.string.checkout);
+    binding.button.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        sendCheckoutEmail();
 
-				finish();
-			}
-		});
-	}
+        finish();
+      }
+    });
+  }
 
-	private void showEmptyCart() {
-		TransitionManager.beginDelayedTransition(binding.rootLayout, new Fade());
-		binding.emptyView.setVisibility(View.VISIBLE);
-		binding.loading.setVisibility(View.INVISIBLE);
-		binding.cartList.setVisibility(View.INVISIBLE);
-		binding.button.setVisibility(View.VISIBLE);
-		binding.button.setText(R.string.start_shopping);
-		binding.button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				finish();
-			}
-		});
-	}
+  private void showEmptyCart() {
+    TransitionManager.beginDelayedTransition(binding.rootLayout, new Fade());
+    binding.emptyView.setVisibility(View.VISIBLE);
+    binding.loading.setVisibility(View.INVISIBLE);
+    binding.cartList.setVisibility(View.INVISIBLE);
+    binding.button.setVisibility(View.VISIBLE);
+    binding.button.setText(R.string.start_shopping);
+    binding.button.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        finish();
+      }
+    });
+  }
 
-	private void showLoading() {
-		TransitionManager.beginDelayedTransition(binding.rootLayout, new Fade());
-		binding.emptyView.setVisibility(View.INVISIBLE);
-		binding.loading.setVisibility(View.VISIBLE);
-		binding.cartList.setVisibility(View.INVISIBLE);
-		binding.button.setVisibility(View.INVISIBLE);
-	}
+  private void showLoading() {
+    TransitionManager.beginDelayedTransition(binding.rootLayout, new Fade());
+    binding.emptyView.setVisibility(View.INVISIBLE);
+    binding.loading.setVisibility(View.VISIBLE);
+    binding.cartList.setVisibility(View.INVISIBLE);
+    binding.button.setVisibility(View.INVISIBLE);
+  }
 
-	private void updateCheckoutAmount() {
-		if (adapter.getItemCount() == 0) {
-			return;
-		}
+  private void updateCheckoutAmount() {
+    if (adapter.getItemCount() == 0) {
+      return;
+    }
 
-		List<CartProduct> cartProducts = adapter.getCartProducts();
-		double sum = 0;
+    List<CartProduct> cartProducts = adapter.getCartProducts();
+    double sum = 0;
 
-		for (CartProduct cartProduct : cartProducts) {
-			sum = sum + cartProduct.getProductPrice();
-		}
+    for (CartProduct cartProduct : cartProducts) {
+      sum = sum + cartProduct.getProductPrice();
+    }
 
-		binding.button.setText(getString(R.string.checkout) + ": " + String.format("%.2f", sum));
-	}
+    binding.button.setText(getString(R.string.checkout) + ": " + String.format("%.2f", sum));
+  }
 
-	private final CartAdapter adapter = new CartAdapter(this);
-	private ActivityCartBinding binding;
-	private CartViewModel cartViewModel;
+  private final CartAdapter adapter = new CartAdapter(this);
+  private ActivityCartBinding binding;
+  private CartViewModel cartViewModel;
 
-	private static final String TAG = CartActivity.class.getSimpleName();
+  private static final String TAG = CartActivity.class.getSimpleName();
 
 }

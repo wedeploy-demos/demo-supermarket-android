@@ -9,17 +9,17 @@ import android.content.Context;
 
 public class SupermarketApplication extends Application {
 
-	public static Context getContext() {
-		return context;
-	}
+  public static Context getContext() {
+    return context;
+  }
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+  @Override
+  public void onCreate() {
+    super.onCreate();
 
-		context = this;
-	}
+    context = this;
+  }
 
-	private static Context context;
+  private static Context context;
 
 }

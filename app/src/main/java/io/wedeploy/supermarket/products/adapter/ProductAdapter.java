@@ -16,59 +16,59 @@ import java.util.List;
  */
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
-	public ProductAdapter(AddToCartListener listener) {
-		this.listener = listener;
-	}
+  public ProductAdapter(AddToCartListener listener) {
+    this.listener = listener;
+  }
 
-	@Override
-	public ProductViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		ItemProductBinding binding = ItemProductBinding.inflate(inflater, parent, false);
+  @Override
+  public ProductViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+    ItemProductBinding binding = ItemProductBinding.inflate(inflater, parent, false);
 
-		return new ProductViewHolder(binding);
-	}
+    return new ProductViewHolder(binding);
+  }
 
-	@Override
-	public void onBindViewHolder(final ProductViewHolder holder, int position) {
-		final Product product = products.get(position);
-		holder.binding.setProduct(product);
+  @Override
+  public void onBindViewHolder(final ProductViewHolder holder, int position) {
+    final Product product = products.get(position);
+    holder.binding.setProduct(product);
 
-		holder.binding.addToCartButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				int position = holder.getAdapterPosition();
-				listener.onItemAddedToCart(products.get(position));
-			}
-		});
-	}
+    holder.binding.addToCartButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        int position = holder.getAdapterPosition();
+        listener.onItemAddedToCart(products.get(position));
+      }
+    });
+  }
 
-	@Override
-	public int getItemCount() {
-		return products.size();
-	}
+  @Override
+  public int getItemCount() {
+    return products.size();
+  }
 
-	public void setItems(List<Product> products) {
-		this.products.clear();
+  public void setItems(List<Product> products) {
+    this.products.clear();
 
-		if (products != null) {
-			this.products.addAll(products);
-		}
+    if (products != null) {
+      this.products.addAll(products);
+    }
 
-		notifyDataSetChanged();
-	}
+    notifyDataSetChanged();
+  }
 
-	private final AddToCartListener listener;
-	private final List<Product> products = new ArrayList<>();
+  private final AddToCartListener listener;
+  private final List<Product> products = new ArrayList<>();
 
-	class ProductViewHolder extends RecyclerView.ViewHolder {
+  class ProductViewHolder extends RecyclerView.ViewHolder {
 
-		public ProductViewHolder(ItemProductBinding binding) {
-			super(binding.getRoot());
+    public ProductViewHolder(ItemProductBinding binding) {
+      super(binding.getRoot());
 
-			this.binding = binding;
-		}
+      this.binding = binding;
+    }
 
-		final ItemProductBinding binding;
-	}
+    final ItemProductBinding binding;
+  }
 
 }

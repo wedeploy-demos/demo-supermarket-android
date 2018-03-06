@@ -25,75 +25,75 @@ import io.wedeploy.supermarket.welcome.WelcomeActivity;
  */
 public class LogoutBottomSheet extends BottomSheetDialogFragment {
 
-	public static void show(AppCompatActivity activity) {
-		LogoutBottomSheet bottomSheet = new LogoutBottomSheet();
-		bottomSheet.show(activity.getSupportFragmentManager(), TAG);
-	}
+  public static void show(AppCompatActivity activity) {
+    LogoutBottomSheet bottomSheet = new LogoutBottomSheet();
+    bottomSheet.show(activity.getSupportFragmentManager(), TAG);
+  }
 
-	@Nullable
-	@Override
-	public View onCreateView(
-		LayoutInflater inflater, @Nullable ViewGroup container,
-		@Nullable Bundle savedInstanceState) {
+  @Nullable
+  @Override
+  public View onCreateView(
+    LayoutInflater inflater, @Nullable ViewGroup container,
+    @Nullable Bundle savedInstanceState) {
 
-		ViewGroup viewGroup = (ViewGroup)inflater.inflate(
-			R.layout.bottom_sheet, container, false);
+    ViewGroup viewGroup = (ViewGroup)inflater.inflate(
+      R.layout.bottom_sheet, container, false);
 
-		TextView logout = (TextView)inflater.inflate(
-			R.layout.bottom_sheet_item, viewGroup, false);
+    TextView logout = (TextView)inflater.inflate(
+      R.layout.bottom_sheet_item, viewGroup, false);
 
-		TextView cancel = (TextView)inflater.inflate(
-			R.layout.bottom_sheet_item, viewGroup, false);
+    TextView cancel = (TextView)inflater.inflate(
+      R.layout.bottom_sheet_item, viewGroup, false);
 
-		logout.setText(R.string.log_out);
-		logout.setTextColor(ResourcesCompat.getColor(getResources(), R.color.red, null));
-		logout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				logout();
-			}
-		});
+    logout.setText(R.string.log_out);
+    logout.setTextColor(ResourcesCompat.getColor(getResources(), R.color.red, null));
+    logout.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        logout();
+      }
+    });
 
-		cancel.setText(R.string.cancel);
-		cancel.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				dismiss();
-			}
-		});
+    cancel.setText(R.string.cancel);
+    cancel.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        dismiss();
+      }
+    });
 
-		viewGroup.addView(logout);
-		viewGroup.addView(cancel);
+    viewGroup.addView(logout);
+    viewGroup.addView(cancel);
 
-		return viewGroup;
-	}
+    return viewGroup;
+  }
 
-	private void logout() {
-		removeToken();
+  private void logout() {
+    removeToken();
 
-		SupermarketData.getInstance().destroy();
-		Settings.clear();
+    SupermarketData.getInstance().destroy();
+    Settings.clear();
 
-		Activity activity = getActivity();
-		activity.finish();
-		startActivity(new Intent(activity, WelcomeActivity.class));
-	}
+    Activity activity = getActivity();
+    activity.finish();
+    startActivity(new Intent(activity, WelcomeActivity.class));
+  }
 
-	private static void removeToken() {
-		SupermarketAuth.getInstance().signOut(Settings.getAuthorization())
-			.execute(new Callback() {
-				@Override
-				public void onSuccess(Response response) {
-					Log.i(TAG, "Token revoked");
-				}
+  private static void removeToken() {
+    SupermarketAuth.getInstance().signOut(Settings.getAuthorization())
+      .execute(new Callback() {
+        @Override
+        public void onSuccess(Response response) {
+          Log.i(TAG, "Token revoked");
+        }
 
-				@Override
-				public void onFailure(Exception e) {
-					Log.i(TAG, "Could not revoke token", e);
-				}
-			});
-	}
+        @Override
+        public void onFailure(Exception e) {
+          Log.i(TAG, "Could not revoke token", e);
+        }
+      });
+  }
 
-	private static final String TAG = LogoutBottomSheet.class.getSimpleName();
+  private static final String TAG = LogoutBottomSheet.class.getSimpleName();
 
 }

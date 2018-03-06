@@ -31,118 +31,118 @@ import static io.wedeploy.supermarket.util.RequestState.*;
  */
 public class LoginActivity extends AppCompatActivity implements LifecycleRegistryOwner {
 
-	LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
+  LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-	@Override
-	public LifecycleRegistry getLifecycle() {
-		return lifecycleRegistry;
-	}
+  @Override
+  public LifecycleRegistry getLifecycle() {
+    return lifecycleRegistry;
+  }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-		binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+    binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
 
-		loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
-		loginViewModel.getLoginState().observe(this, new Observer<LoginState>() {
-			@Override
-			public void onChanged(@Nullable LoginState state) {
-				setLoginState(state);
-			}
-		});
+    loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+    loginViewModel.getLoginState().observe(this, new Observer<LoginState>() {
+      @Override
+      public void onChanged(@Nullable LoginState state) {
+        setLoginState(state);
+      }
+    });
 
-		binding.signUpButton.setText(getSignUpButtonText());
-		binding.signUpButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
-				finish();
-			}
-		});
+    binding.signUpButton.setText(getSignUpButtonText());
+    binding.signUpButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+        finish();
+      }
+    });
 
-		binding.signInButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				String email = binding.email.getText().toString();
-				String password = binding.password.getText().toString();
+    binding.signInButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        String email = binding.email.getText().toString();
+        String password = binding.password.getText().toString();
 
-				loginViewModel.login(email, password);
-			}
-		});
+        loginViewModel.login(email, password);
+      }
+    });
 
-		binding.forgotPasswordButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				startActivityForResult(
-					new Intent(LoginActivity.this, ResetPasswordActivity.class),
-					REQUEST_RESET_PASSWORD);
-			}
-		});
-	}
+    binding.forgotPasswordButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        startActivityForResult(
+          new Intent(LoginActivity.this, ResetPasswordActivity.class),
+          REQUEST_RESET_PASSWORD);
+      }
+    });
+  }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
 
-		if ((requestCode == REQUEST_RESET_PASSWORD) && (resultCode == RESULT_OK)) {
-			AlertMessage.showSuccessMessage(
-				this, getString(R.string.the_email_should_arrive_within_a_few_minutes));
-		}
-	}
+    if ((requestCode == REQUEST_RESET_PASSWORD) && (resultCode == RESULT_OK)) {
+      AlertMessage.showSuccessMessage(
+        this, getString(R.string.the_email_should_arrive_within_a_few_minutes));
+    }
+  }
 
-	private void enableFields(boolean enable) {
-		binding.password.setEnabled(enable);
-		binding.email.setEnabled(enable);
-		binding.signInButton.setEnabled(enable);
-	}
+  private void enableFields(boolean enable) {
+    binding.password.setEnabled(enable);
+    binding.email.setEnabled(enable);
+    binding.signInButton.setEnabled(enable);
+  }
 
-	private CharSequence getSignUpButtonText() {
-		SpannableStringBuilder sb = new SpannableStringBuilder(
-			getString(R.string.dont_you_have_an_account));
+  private CharSequence getSignUpButtonText() {
+    SpannableStringBuilder sb = new SpannableStringBuilder(
+      getString(R.string.dont_you_have_an_account));
 
-		ForegroundColorSpan colorSpan = new ForegroundColorSpan(
-			ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
+    ForegroundColorSpan colorSpan = new ForegroundColorSpan(
+      ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));
 
-		SpannableString signUpString = new SpannableString(getString(R.string.sign_up));
-		signUpString.setSpan(colorSpan, 0, signUpString.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-		sb.append(" ");
-		sb.append(signUpString);
+    SpannableString signUpString = new SpannableString(getString(R.string.sign_up));
+    signUpString.setSpan(colorSpan, 0, signUpString.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+    sb.append(" ");
+    sb.append(signUpString);
 
-		return sb;
-	}
+    return sb;
+  }
 
-	private void setLoginState(LoginState state) {
-		switch (state.getState()) {
-			case IDLE:
-				enableFields(true);
-				binding.signInButton.setText(R.string.log_in);
-				break;
+  private void setLoginState(LoginState state) {
+    switch (state.getState()) {
+      case IDLE:
+        enableFields(true);
+        binding.signInButton.setText(R.string.log_in);
+        break;
 
-			case LOADING:
-				enableFields(false);
-				binding.signInButton.setText(R.string.logging_in);
-				break;
+      case LOADING:
+        enableFields(false);
+        binding.signInButton.setText(R.string.logging_in);
+        break;
 
-			case SUCCESS:
-				startActivity(new Intent(this, ProductsActivity.class));
-				finishAffinity();
-				break;
+      case SUCCESS:
+        startActivity(new Intent(this, ProductsActivity.class));
+        finishAffinity();
+        break;
 
-			case FAILURE:
-				loginViewModel.setIdleState();
+      case FAILURE:
+        loginViewModel.setIdleState();
 
-				AlertMessage.showErrorMessage(
-					this, getError(state.getException(), getString(R.string
-						.could_not_login)));
+        AlertMessage.showErrorMessage(
+          this, getError(state.getException(), getString(R.string
+            .could_not_login)));
 
-				break;
-		}
+        break;
+    }
 
-	}
+  }
 
-	private ActivityLoginBinding binding;
-	private LoginViewModel loginViewModel;
-	private static final int REQUEST_RESET_PASSWORD = 1;
+  private ActivityLoginBinding binding;
+  private LoginViewModel loginViewModel;
+  private static final int REQUEST_RESET_PASSWORD = 1;
 
 }

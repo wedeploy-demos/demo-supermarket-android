@@ -17,61 +17,61 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 public class UserPhotoView extends FrameLayout {
 
-	public UserPhotoView(@NonNull Context context) {
-		super(context);
+  public UserPhotoView(@NonNull Context context) {
+    super(context);
 
-		init();
-	}
+    init();
+  }
 
-	public UserPhotoView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public UserPhotoView(@NonNull Context context, @Nullable AttributeSet attrs) {
 
-		super(context, attrs);
+    super(context, attrs);
 
-		init();
-	}
+    init();
+  }
 
-	public UserPhotoView(
-		@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
+  public UserPhotoView(
+    @NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
 
-		super(context, attrs, defStyleAttr);
+    super(context, attrs, defStyleAttr);
 
-		init();
-	}
+    init();
+  }
 
-	public void setUserPhoto(String photoUrl, String name) {
-		if ((photoUrl != null) && !photoUrl.isEmpty()) {
-			userPhoto.setVisibility(VISIBLE);
-			userPhotoDefault.setVisibility(GONE);
+  public void setUserPhoto(String photoUrl, String name) {
+    if ((photoUrl != null) && !photoUrl.isEmpty()) {
+      userPhoto.setVisibility(VISIBLE);
+      userPhotoDefault.setVisibility(GONE);
 
-			Context context = getContext();
+      Context context = getContext();
 
-			Glide.with(context)
-				.load(photoUrl)
-				.placeholder(R.drawable.we_rounded_background)
-				.bitmapTransform(new CropCircleTransformation(context))
-				.into(userPhoto);
-		}
-		else {
-			userPhoto.setVisibility(GONE);
-			userPhotoDefault.setVisibility(VISIBLE);
+      Glide.with(context)
+        .load(photoUrl)
+        .placeholder(R.drawable.we_rounded_background)
+        .bitmapTransform(new CropCircleTransformation(context))
+        .into(userPhoto);
+    }
+    else {
+      userPhoto.setVisibility(GONE);
+      userPhotoDefault.setVisibility(VISIBLE);
 
-			if (name != null && !name.isEmpty()) {
-				userPhotoDefault.setText(String.valueOf(name.charAt(0)).toUpperCase());
-			}
-			else {
-				userPhotoDefault.setText("A");
-			}
-		}
-	}
+      if (name != null && !name.isEmpty()) {
+        userPhotoDefault.setText(String.valueOf(name.charAt(0)).toUpperCase());
+      }
+      else {
+        userPhotoDefault.setText("A");
+      }
+    }
+  }
 
-	private void init() {
-		inflate(getContext(), R.layout.user_photo, this);
+  private void init() {
+    inflate(getContext(), R.layout.user_photo, this);
 
-		userPhoto = (ImageView)findViewById(R.id.photo);
-		userPhotoDefault = (TextView)findViewById(R.id.photoDefault);
-	}
+    userPhoto = (ImageView)findViewById(R.id.photo);
+    userPhotoDefault = (TextView)findViewById(R.id.photoDefault);
+  }
 
-	private ImageView userPhoto;
-	private TextView userPhotoDefault;
+  private ImageView userPhoto;
+  private TextView userPhotoDefault;
 
 }

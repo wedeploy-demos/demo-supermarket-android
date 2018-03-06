@@ -14,83 +14,83 @@ import org.json.JSONObject;
  */
 public class SupermarketAuth {
 
-	public static SupermarketAuth getInstance() {
-		if (instance == null) {
-			instance = new SupermarketAuth();
-		}
+  public static SupermarketAuth getInstance() {
+    if (instance == null) {
+      instance = new SupermarketAuth();
+    }
 
-		return instance;
-	}
+    return instance;
+  }
 
-	public Call<Response> getUser(Authorization authorization) {
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+  public Call<Response> getUser(Authorization authorization) {
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		return weDeploy.auth(AUTH_URL)
-			.authorization(authorization)
-			.getCurrentUser();
-	}
+    return weDeploy.auth(AUTH_URL)
+      .authorization(authorization)
+      .getCurrentUser();
+  }
 
-	public Call<Response> resetPassword(String email) {
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+  public Call<Response> resetPassword(String email) {
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		return weDeploy.auth(AUTH_URL)
-			.sendPasswordResetEmail(email);
-	}
+    return weDeploy.auth(AUTH_URL)
+      .sendPasswordResetEmail(email);
+  }
 
-	public void signIn(Activity activity, ProviderAuthorization.Provider provider) {
-		ProviderAuthorization authProvider = new ProviderAuthorization.Builder()
-			.redirectUri("oauth-wedeploy://io.wedeploy.supermarket")
-			.providerScope("email")
-			.provider(provider)
-			.build();
+  public void signIn(Activity activity, ProviderAuthorization.Provider provider) {
+    ProviderAuthorization authProvider = new ProviderAuthorization.Builder()
+      .redirectUri("oauth-wedeploy://io.wedeploy.supermarket")
+      .providerScope("email")
+      .provider(provider)
+      .build();
 
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		weDeploy.auth(AUTH_URL)
-			.signIn(activity, authProvider);
-	}
+    weDeploy.auth(AUTH_URL)
+      .signIn(activity, authProvider);
+  }
 
-	public Call<Response> signIn(String email, String password) {
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+  public Call<Response> signIn(String email, String password) {
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		return weDeploy.auth(AUTH_URL)
-			.signIn(email, password);
-	}
+    return weDeploy.auth(AUTH_URL)
+      .signIn(email, password);
+  }
 
-	public Call<Response> signOut(Authorization authorization) {
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+  public Call<Response> signOut(Authorization authorization) {
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		return weDeploy.auth(AUTH_URL)
-			.authorization(authorization)
-			.signOut();
-	}
+    return weDeploy.auth(AUTH_URL)
+      .authorization(authorization)
+      .signOut();
+  }
 
-	public Call<Response> signUp(String email, String password, String name) {
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+  public Call<Response> signUp(String email, String password, String name) {
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		return weDeploy.auth(AUTH_URL)
-			.createUser(email, password, name);
-	}
+    return weDeploy.auth(AUTH_URL)
+      .createUser(email, password, name);
+  }
 
-	public void saveUser(Response response) throws JSONException {
-		JSONObject userJsonObject = new JSONObject(response.getBody());
-		Settings.saveUser(userJsonObject);
-	}
+  public void saveUser(Response response) throws JSONException {
+    JSONObject userJsonObject = new JSONObject(response.getBody());
+    Settings.saveUser(userJsonObject);
+  }
 
-	public String saveToken(Response response) throws JSONException {
-		JSONObject tokenJsonObject = new JSONObject(response.getBody());
-		String token = tokenJsonObject.getString("access_token");
-		Settings.saveToken(token);
+  public String saveToken(Response response) throws JSONException {
+    JSONObject tokenJsonObject = new JSONObject(response.getBody());
+    String token = tokenJsonObject.getString("access_token");
+    Settings.saveToken(token);
 
-		return token;
-	}
+    return token;
+  }
 
-	private SupermarketAuth() {
-	}
+  private SupermarketAuth() {
+  }
 
-	private static SupermarketAuth instance;
+  private static SupermarketAuth instance;
 
-	private static final String AUTH_URL = "auth-supermarket.wedeploy.io";
-	private static final String TAG = SupermarketAuth.class.getSimpleName();
+  private static final String AUTH_URL = "auth-supermarket.wedeploy.io";
+  private static final String TAG = SupermarketAuth.class.getSimpleName();
 
 }

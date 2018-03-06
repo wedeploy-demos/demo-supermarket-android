@@ -15,78 +15,78 @@ import static com.wedeploy.android.query.filter.Filter.*;
  */
 public class SupermarketData {
 
-	public synchronized static SupermarketData getInstance() {
-		if (instance == null) {
-			instance = new SupermarketData();
-		}
+  public synchronized static SupermarketData getInstance() {
+    if (instance == null) {
+      instance = new SupermarketData();
+    }
 
-		return instance;
-	}
+    return instance;
+  }
 
-	public synchronized static void destroy() {
-		instance = null;
-	}
+  public synchronized static void destroy() {
+    instance = null;
+  }
 
-	public Call<Response> addToCart(Product product) {
-		JSONObject cartProductJsonObject = new JSONObject();
+  public Call<Response> addToCart(Product product) {
+    JSONObject cartProductJsonObject = new JSONObject();
 
-		try {
-			cartProductJsonObject.put("productTitle", product.getTitle())
-				.put("productPrice", product.getPrice())
-				.put("productFilename", product.getFilename())
-				.put("productId", product.getId())
-				.put("userId", currentUserId);
-		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
+    try {
+      cartProductJsonObject.put("productTitle", product.getTitle())
+        .put("productPrice", product.getPrice())
+        .put("productFilename", product.getFilename())
+        .put("productId", product.getId())
+        .put("userId", currentUserId);
+    }
+    catch (JSONException e) {
+      e.printStackTrace();
+    }
 
-		return weDeploy.data(DATA_URL)
-			.create("cart", cartProductJsonObject);
-	}
+    return weDeploy.data(DATA_URL)
+      .create("cart", cartProductJsonObject);
+  }
 
-	public Call<Response> getCart() {
-		return weDeploy.data(DATA_URL)
-			.where(equal("userId", currentUserId))
-			.orderBy("productTitle")
-			.get("cart");
-	}
+  public Call<Response> getCart() {
+    return weDeploy.data(DATA_URL)
+      .where(equal("userId", currentUserId))
+      .orderBy("productTitle")
+      .get("cart");
+  }
 
-	public Call<Response> getCartCount() {
-		return weDeploy.data(DATA_URL)
-			.where(equal("userId", currentUserId))
-			.count()
-			.get("cart");
-	}
+  public Call<Response> getCartCount() {
+    return weDeploy.data(DATA_URL)
+      .where(equal("userId", currentUserId))
+      .count()
+      .get("cart");
+  }
 
-	public Call<Response> deleteFromCart(String id) {
-		return weDeploy.data(DATA_URL)
-			.delete("cart/" + id);
-	}
+  public Call<Response> deleteFromCart(String id) {
+    return weDeploy.data(DATA_URL)
+      .delete("cart/" + id);
+  }
 
-	public Call<Response> getProducts(String type) {
-		type = ("all".equalsIgnoreCase(type)) ? null : type;
-		Filter typeFilter = (type != null) ? match("type", type) : not("type", "");
+  public Call<Response> getProducts(String type) {
+    type = ("all".equalsIgnoreCase(type)) ? null : type;
+    Filter typeFilter = (type != null) ? match("type", type) : not("type", "");
 
-		return weDeploy.data(DATA_URL)
-			.where(typeFilter.and(exists("filename")))
-			.orderBy("title")
-			.get("products");
-	}
+    return weDeploy.data(DATA_URL)
+      .where(typeFilter.and(exists("filename")))
+      .orderBy("title")
+      .get("products");
+  }
 
-	private SupermarketData() {
-		weDeploy = new WeDeploy.Builder()
-			.authorization(Settings.getAuthorization())
-			.build();
+  private SupermarketData() {
+    weDeploy = new WeDeploy.Builder()
+      .authorization(Settings.getAuthorization())
+      .build();
 
-		this.currentUserId = Settings.getUserId();
-	}
+    this.currentUserId = Settings.getUserId();
+  }
 
-	private final String currentUserId;
-	private WeDeploy weDeploy;
+  private final String currentUserId;
+  private WeDeploy weDeploy;
 
-	private static SupermarketData instance;
+  private static SupermarketData instance;
 
-	private static final String DATA_URL = "data-supermarket.wedeploy.io";
+  private static final String DATA_URL = "data-supermarket.wedeploy.io";
 
 }

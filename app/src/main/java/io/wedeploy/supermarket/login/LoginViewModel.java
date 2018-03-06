@@ -21,61 +21,61 @@ import static io.wedeploy.supermarket.util.RequestState.*;
  */
 public class LoginViewModel extends ViewModel {
 
-	public LoginViewModel() {
-		loginState = new MutableLiveData<>();
-		loginState.setValue(new LoginState(IDLE));
-	}
+  public LoginViewModel() {
+    loginState = new MutableLiveData<>();
+    loginState.setValue(new LoginState(IDLE));
+  }
 
-	public LiveData<LoginState> getLoginState() {
-		return loginState;
-	}
+  public LiveData<LoginState> getLoginState() {
+    return loginState;
+  }
 
-	public void login(String email, String password) {
-		loginState.setValue(new LoginState(LOADING));
+  public void login(String email, String password) {
+    loginState.setValue(new LoginState(LOADING));
 
-		doLogin(email, password);
-	}
+    doLogin(email, password);
+  }
 
-	public void setIdleState() {
-		loginState.setValue(new LoginState(IDLE));
-	}
+  public void setIdleState() {
+    loginState.setValue(new LoginState(IDLE));
+  }
 
-	private void doLogin(String email, String password) {
-		final SupermarketAuth auth = SupermarketAuth.getInstance();
-		auth.signIn(email, password)
-			.asSingle()
-			.subscribeOn(Schedulers.io())
-			.flatMap(new Function<Response, SingleSource<? extends Response>>() {
-				@Override
-				public SingleSource<? extends Response> apply(@NonNull Response response)
-					throws Exception {
-					String token = auth.saveToken(response);
+  private void doLogin(String email, String password) {
+    final SupermarketAuth auth = SupermarketAuth.getInstance();
+    auth.signIn(email, password)
+      .asSingle()
+      .subscribeOn(Schedulers.io())
+      .flatMap(new Function<Response, SingleSource<? extends Response>>() {
+        @Override
+        public SingleSource<? extends Response> apply(@NonNull Response response)
+          throws Exception {
+          String token = auth.saveToken(response);
 
-					return auth.getUser(new TokenAuthorization(token))
-						.asSingle()
-						.subscribeOn(Schedulers.io());
-				}
-			})
-			.doOnSuccess(new Consumer<Response>() {
-				@Override
-				public void accept(@NonNull Response response) throws Exception {
-					auth.saveUser(response);
-				}
-			})
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new DisposableSingleObserver<Response>() {
-				@Override
-				public void onSuccess(Response response) {
-					loginState.setValue(new LoginState(SUCCESS));
-				}
+          return auth.getUser(new TokenAuthorization(token))
+            .asSingle()
+            .subscribeOn(Schedulers.io());
+        }
+      })
+      .doOnSuccess(new Consumer<Response>() {
+        @Override
+        public void accept(@NonNull Response response) throws Exception {
+          auth.saveUser(response);
+        }
+      })
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableSingleObserver<Response>() {
+        @Override
+        public void onSuccess(Response response) {
+          loginState.setValue(new LoginState(SUCCESS));
+        }
 
-				@Override
-				public void onError(Throwable throwable) {
-					loginState.setValue(new LoginState(FAILURE, new Exception(throwable)));
-				}
-			});
-	}
+        @Override
+        public void onError(Throwable throwable) {
+          loginState.setValue(new LoginState(FAILURE, new Exception(throwable)));
+        }
+      });
+  }
 
-	private MutableLiveData<LoginState> loginState;
+  private MutableLiveData<LoginState> loginState;
 
 }

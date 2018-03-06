@@ -12,44 +12,44 @@ import java.util.List;
  */
 public class SupermarketEmail {
 
-	public static SupermarketEmail getInstance() {
-		if (instance == null) {
-			instance = new SupermarketEmail();
-		}
+  public static SupermarketEmail getInstance() {
+    if (instance == null) {
+      instance = new SupermarketEmail();
+    }
 
-		return instance;
-	}
+    return instance;
+  }
 
-	public Call<Response> sendCheckoutEmail(
-		String name, String email, List<CartProduct> cartProducts) {
+  public Call<Response> sendCheckoutEmail(
+    String name, String email, List<CartProduct> cartProducts) {
 
-		WeDeploy weDeploy = new WeDeploy.Builder().build();
+    WeDeploy weDeploy = new WeDeploy.Builder().build();
 
-		return weDeploy.email(EMAIL_URL)
-			.authorization(Settings.getAuthorization())
-			.from("auto-confirm@supermarket.wedeploy.io")
-			.to(email)
-			.subject("Thank you " + name + ", your order was confirmed!")
-			.message(getMessageFromCartProducts(cartProducts))
-			.send();
-	}
+    return weDeploy.email(EMAIL_URL)
+      .authorization(Settings.getAuthorization())
+      .from("auto-confirm@supermarket.wedeploy.io")
+      .to(email)
+      .subject("Thank you " + name + ", your order was confirmed!")
+      .message(getMessageFromCartProducts(cartProducts))
+      .send();
+  }
 
-	private String getMessageFromCartProducts(List<CartProduct> cartProducts) {
-		StringBuilder sb = new StringBuilder();
+  private String getMessageFromCartProducts(List<CartProduct> cartProducts) {
+    StringBuilder sb = new StringBuilder();
 
-		for (CartProduct cartProduct : cartProducts) {
-			sb.append("<div>");
-			sb.append(cartProduct.getProductTitle());
-			sb.append(" - ");
-			sb.append(cartProduct.getProductPrice());
-			sb.append("</div>");
-		}
+    for (CartProduct cartProduct : cartProducts) {
+      sb.append("<div>");
+      sb.append(cartProduct.getProductTitle());
+      sb.append(" - ");
+      sb.append(cartProduct.getProductPrice());
+      sb.append("</div>");
+    }
 
-		return sb.append("<br>Thank you!").toString();
-	}
+    return sb.append("<br>Thank you!").toString();
+  }
 
-	private static SupermarketEmail instance;
+  private static SupermarketEmail instance;
 
-	private static final String EMAIL_URL = "http://email-supermarket.wedeploy.io";
+  private static final String EMAIL_URL = "http://email-supermarket.wedeploy.io";
 
 }

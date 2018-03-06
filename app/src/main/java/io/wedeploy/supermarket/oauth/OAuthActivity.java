@@ -23,52 +23,52 @@ import io.wedeploy.supermarket.repository.SupermarketAuth;
  */
 public class OAuthActivity extends AppCompatActivity {
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_oauth);
+    setContentView(R.layout.activity_oauth);
 
-		Authorization authorization = TokenAuthorization.getAuthorizationFromIntent(getIntent());
+    Authorization authorization = TokenAuthorization.getAuthorizationFromIntent(getIntent());
 
-		if (authorization == null) {
-			finish();
-		}
-		else {
-			Settings.saveToken(authorization.getToken());
+    if (authorization == null) {
+      finish();
+    }
+    else {
+      Settings.saveToken(authorization.getToken());
 
-			final SupermarketAuth auth = SupermarketAuth.getInstance();
-			auth.getUser(authorization)
-				.asSingle()
-				.subscribeOn(Schedulers.io())
-				.observeOn(AndroidSchedulers.mainThread())
-				.doOnSuccess(new Consumer<Response>() {
-					@Override
-					public void accept(@NonNull Response response) throws Exception {
-						auth.saveUser(response);
-					}
-				})
-				.subscribe(new DisposableSingleObserver<Response>() {
-					@Override
-					public void onSuccess(Response response) {
-						Intent intent = new Intent(OAuthActivity.this, ProductsActivity.class);
-						startActivity(intent);
-						finishAffinity();
-					}
+      final SupermarketAuth auth = SupermarketAuth.getInstance();
+      auth.getUser(authorization)
+        .asSingle()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSuccess(new Consumer<Response>() {
+          @Override
+          public void accept(@NonNull Response response) throws Exception {
+            auth.saveUser(response);
+          }
+        })
+        .subscribe(new DisposableSingleObserver<Response>() {
+          @Override
+          public void onSuccess(Response response) {
+            Intent intent = new Intent(OAuthActivity.this, ProductsActivity.class);
+            startActivity(intent);
+            finishAffinity();
+          }
 
-					@Override
-					public void onError(Throwable e) {
-						Settings.clear();
+          @Override
+          public void onError(Throwable e) {
+            Settings.clear();
 
-						Toast.makeText(
-							OAuthActivity.this,
-							getString(R.string.could_not_sign_in_please_try_again),
-							Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+              OAuthActivity.this,
+              getString(R.string.could_not_sign_in_please_try_again),
+              Toast.LENGTH_SHORT).show();
 
-						finish();
-					}
-				});
-		}
-	}
+            finish();
+          }
+        });
+    }
+  }
 
 }

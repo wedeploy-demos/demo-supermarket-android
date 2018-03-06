@@ -7,23 +7,23 @@ import io.wedeploy.supermarket.util.RequestState;
  */
 public class ResetPasswordState {
 
-	public ResetPasswordState(RequestState state) {
-		this.state = state;
-	}
+  public ResetPasswordState(RequestState state) {
+    this.state = state;
+  }
 
-	public ResetPasswordState(RequestState state, Exception exception) {
-		this.state = state;
-		this.exception = exception;
-	}
+  public ResetPasswordState(RequestState state, Exception exception) {
+    this.state = state;
+    this.exception = exception;
+  }
 
-	public RequestState getState() {
-		return state;
-	}
+  public RequestState getState() {
+    return state;
+  }
 
-	public Exception getException() {
-		return exception;
-	}
+  public Exception getException() {
+    return exception;
+  }
 
-	private Exception exception;
-	private RequestState state;
+  private Exception exception;
+  private RequestState state;
 }

@@ -7,6 +7,6 @@ import io.wedeploy.supermarket.products.model.Product;
  */
 public interface AddToCartListener {
 
-	void onItemAddedToCart(Product product);
+  void onItemAddedToCart(Product product);
 
 }
